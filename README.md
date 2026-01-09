@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Perfect Esthetic – Backend API
+# Perfect Esthetic – Backend API.
 
 Backend API desarrollado en **Laravel 12** para la gestión de contenidos de una clínica estética.
 El sistema permite administrar información con imágenes tipo **Before & After**, asegurando
