@@ -1,112 +1,116 @@
-<p align="center">
-  <a href="https://laravel.com" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
-  </a>
-</p>
+# perfect-esthetic-api
 
-# Perfect Esthetic – Backend API.
+REST API backend for a beauty/esthetic business. Built with Laravel 12 and secured with token-based authentication via Laravel Sanctum.
 
-Backend API desarrollado en **Laravel 12** para la gestión de contenidos de una clínica estética.
-El sistema permite administrar información con imágenes tipo **Before & After**, asegurando
-un manejo correcto del almacenamiento, seguridad y consistencia de los datos.
+## Tech Stack
 
----
+- **PHP** 8.2
+- **Laravel** 12
+- **Laravel Sanctum** — token-based authentication
+- **MySQL** — relational database
+- **Laravel Storage** — local image management
 
-## 📌 Descripción del proyecto
+## Features
 
-Este backend proporciona una **API REST** que centraliza la administración de contenidos visuales
-y datos asociados, facilitando su consumo desde aplicaciones frontend web o móviles.
-Está orientado a un uso administrativo y público controlado.
+- Admin and Staff authentication (register / login via Sanctum tokens)
+- Before & After content management — create, update, and delete transformation posts with image uploads
+- Role-based access control (`ADMIN` / `STAFF`)
+- Public endpoint to list Before & After content
+- Image storage and replacement with automatic cleanup of old files
 
----
+## Project Structure
 
-## 🛠 Tecnologías utilizadas
-
--   PHP 8+
--   Laravel Framework 12
--   Laravel Eloquent ORM
--   MySQL
--   API REST
--   Laravel Sanctum
--   Laravel Storage
--   UUID
-
----
-
-## ⚙️ Funcionalidades principales
-
--   Autenticación de administrador
--   Gestión de contenidos (CRUD)
--   Subida y almacenamiento de imágenes (Before / After)
--   Actualización parcial de registros
--   Eliminación automática de archivos asociados
--   Exposición pública de contenidos visuales
--   Manejo de validaciones y respuestas JSON
-
----
-
-## 📁 Almacenamiento de imágenes
-
-Las imágenes se almacenan en:
-storage/app/public
-
-Y se exponen mediante el enlace simbólico:
-/public/storage
-
-Es obligatorio ejecutar:
-
-```bash
-php artisan storage:link
+```
+app/
+├── Http/
+│   └── Controllers/
+│       ├── API/
+│       │   └── BeforeAfterController.php
+│       └── Auth/
+│           └── AuthController.php
+├── Models/
+│   ├── User.php
+│   └── BeforeAfter.php
+database/
+└── migrations/
 ```
 
----
+## API Endpoints
 
-## 🚀 Instalación y configuración
+### Auth
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/v1/register` | Register admin/staff user | No |
+| POST | `/api/v1/login` | Login and receive token | No |
+
+### Before & After
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/v1/before-after` | List all transformations | No |
+| POST | `/api/v1/before-after` | Upload new before/after post | Yes |
+| PUT | `/api/v1/before-after/{id}` | Update post or images | Yes |
+| DELETE | `/api/v1/before-after/{id}` | Delete post and images | Yes |
+
+## Getting Started
+
+### Requirements
+
+- PHP 8.2+
+- Composer
+- MySQL
+
+### Installation
 
 ```bash
-git clone https://github.com/karool-cc/perfectesthetic-backend.git
-cd perfectesthetic-backend
+# Clone the repository
+git clone https://github.com/karol-cc/perfect-esthetic-api.git
+cd perfect-esthetic-api
+
+# Install dependencies
 composer install
+
+# Set up environment
 cp .env.example .env
 php artisan key:generate
+
+# Configure your database in .env
+# DB_DATABASE=perfectesthetic
+# DB_USERNAME=your_username
+# DB_PASSWORD=your_password
+
+# Run migrations
 php artisan migrate
+
+# Link storage for image access
+php artisan storage:link
+
+# Start the server
 php artisan serve
 ```
 
-Configurar las variables de entorno en el archivo .env según el entorno de ejecución.
+The API will be available at `http://localhost:8000`.
 
----
+## Environment Variables
 
-## 🔗 Endpoints principales
+Create a `.env` file from `.env.example` and configure:
 
-| Método | Endpoint                    | Descripción                 |
-| ------ | --------------------------- | --------------------------- |
-| GET    | `/api/v1/before-after`      | Obtener contenidos públicos |
-| POST   | `/api/v1/before-after`      | Crear contenido             |
-| PUT    | `/api/v1/before-after/{id}` | Actualizar contenido        |
-| DELETE | `/api/v1/before-after/{id}` | Eliminar contenido          |
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=perfectesthetic
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
 
----
+> ⚠️ Never commit your `.env` file. It is already excluded in `.gitignore`.
 
-## 🗑 Eliminación de contenidos
+## Authentication
 
-Al eliminar un registro:
+Protected routes require a Bearer token in the request header:
 
--   Se elimina el registro de la base de datos
--   Se eliminan automáticamente las imágenes asociadas del almacenamiento
--   Esto garantiza consistencia entre datos y archivos físicos.
+```
+Authorization: Bearer {token}
+```
 
----
-
-## 🔒 Seguridad
-
--   Autenticación mediante Laravel Sanctum
--   Rutas protegidas para acciones administrativas
--   Rutas públicas para visualización de contenidos
-
----
-
-## 👩‍💻 Autoras
-
--   Ximena Baquero
--   Karol Cheverria
+The token is returned upon successful login.
